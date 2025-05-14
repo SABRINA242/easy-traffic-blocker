@@ -7,7 +7,7 @@
     const defaultConfig = {
         maxClicks: 3,           // 최대 클릭 수
         resetTime: 1800000,     // 리셋 시간 (30분)
-        warningMessage: "무효트래픽 공격으로 간주하여 IP 추적을 진행합니다.\n계속하시겠습니까?"
+        warningMessage: "무효트래픽 연속 3번 초과하여 공격으로 간주하여 IP 추적을 진행합니다."
     };
 
     // 클릭 감지 및 처리
@@ -59,16 +59,11 @@
         // 최대 클릭 수 체크
         if (clickCount > defaultConfig.maxClicks) {
             // 경고 메시지
-            const userChoice = confirm(defaultConfig.warningMessage);
+            alert(defaultConfig.warningMessage);
             
             // 블로그로 이동
-            const blogUrl = window.easyTrafficBlockerConfig?.blogUrl || 'https://example.com';
-            setTimeout(() => {
-                window.location.href = blogUrl;
-            }, 100);
-
-            // 카운트 리셋
-            localStorage.setItem('adClickCount', '0');
+            const blogUrl = window.easyTrafficBlockerConfig?.blogUrl || 'https://blog.naver.com';
+            window.location.href = blogUrl;
         }
     }
 
