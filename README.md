@@ -16,7 +16,11 @@
 <!-- 트래픽 방지 스크립트 설정 -->
 <script>
     window.easyTrafficBlockerConfig = {
-        blogUrl: "여기에_본인_블로그_주소를_넣으세요"  // 예: "https://example.com"
+        blogUrl: "여기에_본인_블로그_주소를_넣으세요",  // 예: "https://example.com"
+        maxClicks: 3,                  // 최대 클릭 수 (기본값: 3)
+        resetTime: 1800000,           // 리셋 시간 (기본값: 30분)
+        warningMessage: "무효트래픽 연속 3번 초과하여 공격으로 간주하여 IP 추적을 진행합니다.", // 경고 메시지
+        debug: false                   // 디버그 모드 (기본값: false)
     };
 </script>
 <script src="https://cdn.jsdelivr.net/gh/[사용자명]/easy-traffic-blocker@1.0/easy_traffic_blocker.js"></script>
