@@ -21,7 +21,7 @@
         blogUrl: "본인_블로그_주소"  // 예: "https://blog.naver.com/사용자아이디"
     };
 </script>
-<script src="https://cdn.jsdelivr.net/gh/SABRINA242/easy-traffic-blocker@refs/heads/main/easy_traffic_blocker.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/SABRINA242/easy-traffic-blocker@main/easy_traffic_blocker.js"></script>
 
 ```
 <!-- 트래픽 방지 스크립트 설정 - 고급 -->
@@ -34,7 +34,7 @@
         debug: false                   // 디버그 모드 (개발자용)
     };
 </script>
-<script src="https://cdn.jsdelivr.net/gh/SABRINA242/easy-traffic-blocker@refs/heads/main/easy_traffic_blocker.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/SABRINA242/easy-traffic-blocker@main/easy_traffic_blocker.js"></script>
 
 2. `blogUrl`에 본인의 블로그/웹사이트 주소를 입력하세요.
 
