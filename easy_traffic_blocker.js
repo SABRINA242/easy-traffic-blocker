@@ -1,157 +1,150 @@
-// Easy Traffic Blocker v1.1
-// 간단한 애드센스 무효 클릭 방지 스크립트
-// 제작자: [본인 이름/블로그명]
+// 광고 클릭 차단 로직
+class TrafficBlocker {
+    constructor() {
+        this.clickCount = 0;
+        this.blockedCount = 0;
+        this.allowedCount = 0;
+        this.maxBlockedClicks = 3;
+        this.initialize();
+    }
 
-(function() {
-    // 기본 설정
-    const defaultConfig = {
-        maxClicks: 3,           // 최대 클릭 수
-        resetTime: 1800000,     // 리셋 시간 (30분)
-        warningMessage: "무효트래픽 연속 3번 초과하여 공격으로 간주하여 IP 추적을 진행합니다.",
-        debug: true            // 디버깅 모드 활성화
-    };
+    initialize() {
+        // 문서 로드 완료 후 실행
+        document.addEventListener('DOMContentLoaded', () => {
+            this.setupClickHandler();
+            this.setupAdDetection();
+        });
+    }
 
-    // 클릭 카운터 관리자
-    const clickManager = {
-        get count() {
-            return parseInt(localStorage.getItem('adClickCount') || '0');
-        },
-        set count(value) {
-            localStorage.setItem('adClickCount', value.toString());
-        },
-        get lastClickTime() {
-            return parseInt(localStorage.getItem('lastClickTime') || '0');
-        },
-        set lastClickTime(value) {
-            localStorage.setItem('lastClickTime', value.toString());
-        },
-        reset() {
-            this.count = 0;
-            this.lastClickTime = Date.now();
-        },
-        increment() {
-            this.count = this.count + 1;
-            this.lastClickTime = Date.now();
-            return this.count;
-        },
-        isBlocked() {
-            return this.count > defaultConfig.maxClicks;
-        },
-        checkReset() {
-            if (Date.now() - this.lastClickTime > defaultConfig.resetTime) {
-                this.reset();
-                return true;
+    setupClickHandler() {
+        // 모든 클릭 이벤트 감지
+        document.addEventListener('click', (event) => {
+            this.clickCount++;
+            
+            // 클릭된 요소가 광고인지 확인
+            if (this.isAdElement(event.target)) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // 차단 횟수가 최대값을 넘었는지 확인
+                if (this.blockedCount >= this.maxBlockedClicks) {
+                    this.showAlertAndRedirect();
+                    return false;
+                }
+                
+                this.blockedCount++;
+                console.log('광고 클릭 차단됨');
+                return false;
             }
-            return false;
-        }
-    };
+            
+            this.allowedCount++;
+            return true;
+        }, true);
+    }
 
-    // 디버그 로그 함수
-    function debugLog(message) {
-        if (defaultConfig.debug) {
-            console.log('[Traffic Blocker Debug]:', message);
+    showAlertAndRedirect() {
+        const alertMessage = document.getElementById('alert-message');
+        alertMessage.style.display = 'block';
+        alertMessage.textContent = '광고 클릭이 3번을 초과했습니다. 홈페이지로 이동합니다.';
+        
+        // 저장된 홈페이지 URL 가져오기
+        const homepageUrl = localStorage.getItem('homepageUrl');
+        if (homepageUrl) {
+            // 2초 후 리디렉션
+            setTimeout(() => {
+                window.location.href = homepageUrl;
+            }, 2000);
+        } else {
+            alertMessage.textContent = '홈페이지 주소가 설정되지 않았습니다.';
         }
     }
 
-    // 광고 요소 확인
-    function isAdElement(element) {
-        if (!element) return false;
+    setupAdDetection() {
+        // AdSense 광고 감지
+        const adSelectors = [
+            '[data-ad-client]',
+            '[data-ad-slot]',
+            '.adsbygoogle',
+            'ins.adsbygoogle',
+            'iframe[src*="googleads"]',
+            'iframe[src*="doubleclick"]'
+        ];
 
-        const tagName = element.tagName;
-        const className = element.className || '';
-        const id = element.id || '';
-        const src = element.src || '';
-        const adClient = element.getAttribute('data-ad-client') || '';
+        // 광고 요소에 마커 추가
+        adSelectors.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(element => {
+                element.setAttribute('data-is-ad', 'true');
+            });
+        });
 
-        // iframe 광고 체크
-        if (tagName === 'IFRAME') {
-            return src.includes('googleads') || 
-                   src.includes('doubleclick') || 
-                   id.startsWith('aswift_');
+        // iframe 내부의 광고도 감지
+        this.detectAdsInIframes();
+    }
+
+    isAdElement(element) {
+        // 요소 자체가 광고인지 확인
+        if (element.hasAttribute('data-is-ad')) {
+            return true;
         }
 
-        // ins 태그 광고 체크
-        if (tagName === 'INS') {
-            return className.includes('adsbygoogle') && 
-                   adClient.includes('ca-pub-');
+        // 상위 요소들 중 광고가 있는지 확인
+        let currentElement = element;
+        while (currentElement && currentElement !== document.body) {
+            if (currentElement.hasAttribute('data-is-ad')) {
+                return true;
+            }
+            currentElement = currentElement.parentElement;
+        }
+
+        // href 속성이 광고 URL인지 확인
+        if (element.tagName === 'A' && this.isAdUrl(element.href)) {
+            return true;
         }
 
         return false;
     }
 
-    // 광고 클릭 처리
-    function handleAdClick(event) {
-        const element = event.target;
-        let isAd = isAdElement(element);
+    isAdUrl(url) {
+        const adDomains = [
+            'googleads',
+            'doubleclick',
+            'googlesyndication',
+            'adcr.naver.com'
+        ];
+        
+        return adDomains.some(domain => url.includes(domain));
+    }
 
-        // 상위 요소에서 광고 찾기 (최대 5단계)
-        if (!isAd) {
-            let current = element.parentElement;
-            let depth = 0;
-            while (current && depth < 5) {
-                if (isAdElement(current)) {
-                    isAd = true;
-                    break;
-                }
-                current = current.parentElement;
-                depth++;
+    detectAdsInIframes() {
+        // iframe 내부의 광고 감지
+        const iframes = document.querySelectorAll('iframe');
+        iframes.forEach(iframe => {
+            try {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const adElements = iframeDoc.querySelectorAll('[data-ad-client], [data-ad-slot], .adsbygoogle');
+                adElements.forEach(element => {
+                    element.setAttribute('data-is-ad', 'true');
+                });
+            } catch (e) {
+                console.log('iframe 접근 제한:', e);
             }
-        }
-
-        // 광고 클릭이 아닌 경우 무시
-        if (!isAd) return;
-
-        debugLog('광고 클릭 감지됨');
-        event.preventDefault();
-        event.stopPropagation();
-
-        // 시간 경과 체크 및 리셋
-        if (clickManager.checkReset()) {
-            debugLog('시간 초과로 카운터 리셋됨');
-        }
-
-        // 이미 차단된 상태 체크
-        if (clickManager.isBlocked()) {
-            debugLog('차단된 상태에서 클릭 시도');
-            alert(defaultConfig.warningMessage);
-            const blogUrl = window.easyTrafficBlockerConfig?.blogUrl || 'https://blog.naver.com';
-            window.location.href = blogUrl;
-            return;
-        }
-
-        // 클릭 카운트 증가
-        const newCount = clickManager.increment();
-        debugLog(`클릭 카운트 증가: ${newCount}`);
-
-        // 클릭 제한 초과 체크
-        if (newCount > defaultConfig.maxClicks) {
-            debugLog('클릭 제한 초과');
-            alert(defaultConfig.warningMessage);
-            const blogUrl = window.easyTrafficBlockerConfig?.blogUrl || 'https://blog.naver.com';
-            window.location.href = blogUrl;
-            return;
-        }
-
-        // 클릭 카운트 업데이트 이벤트 발생
-        window.dispatchEvent(new Event('adClickCountUpdate'));
+        });
     }
 
-    // 광고 프레임 메시지 수신
-    window.addEventListener('message', function(event) {
-        if (event.data?.type === 'adsense_click') {
-            debugLog('광고 프레임으로부터 클릭 감지');
-            handleAdClick(event);
-        }
-    }, false);
-
-    // 클릭 이벤트 리스너 등록
-    document.addEventListener('click', handleAdClick, true);
-
-    // 초기 상태 확인
-    if (clickManager.isBlocked()) {
-        debugLog('페이지 로드 시 이미 클릭이 차단된 상태입니다.');
+    getStats() {
+        return {
+            totalClicks: this.clickCount,
+            blockedClicks: this.blockedCount,
+            allowedClicks: this.allowedCount
+        };
     }
+}
 
-    // 스크립트 로드 완료
-    debugLog('Easy Traffic Blocker가 설치되었습니다.');
-})();
+// 트래픽 차단기 인스턴스 생성
+const trafficBlocker = new TrafficBlocker();
+
+// 통계 출력 (테스트용)
+setInterval(() => {
+    console.log('클릭 통계:', trafficBlocker.getStats());
+}, 5000); 
