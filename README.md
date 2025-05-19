@@ -24,6 +24,8 @@
 <script src="https://cdn.jsdelivr.net/gh/SABRINA242/easy-traffic-blocker@main/easy_traffic_blocker.js"></script>
 
 ```
+```html
+### 고급 (설정 가능하신분)
 <!-- 트래픽 방지 스크립트 설정 - 고급 -->
 <script>
     window.easyTrafficBlockerConfig = {
@@ -36,6 +38,7 @@
 </script>
 <script src="https://cdn.jsdelivr.net/gh/SABRINA242/easy-traffic-blocker@main/easy_traffic_blocker.js"></script>
 
+```
 2. `blogUrl`에 본인의 블로그/웹사이트 주소를 입력하세요.
 
 ## 주의사항
