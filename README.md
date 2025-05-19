@@ -3,28 +3,38 @@
 간단하게 설치하는 애드센스 무효 클릭 방지 스크립트입니다.
 
 ## 특징
-- 3회 연속 클릭 감지
-- 30분 후 자동 리셋
-- 무효 클릭 시 경고 메시지
+- 광고 무효 클릭 감지 및 차단
+- 자동 리셋 타이머 (기본 30분)
+- 경고 메시지 커스터마이징
+- IP 로깅 및 추적 시스템
 - 자동 리다이렉션
 
 ## 설치 방법
 
 1. 블로그/웹사이트의 `<head>` 태그 안에 아래 코드를 붙여넣으세요:
 
+### 기본 설정 (권장)
 ```html
 <!-- 트래픽 방지 스크립트 설정 -->
 <script>
     window.easyTrafficBlockerConfig = {
-        blogUrl: "여기에_본인_블로그_주소를_넣으세요",  // 예: "https://example.com"
-        maxClicks: 3,                  // 최대 클릭 수 (기본값: 3)
-        resetTime: 1800000,           // 리셋 시간 (기본값: 30분)
-        warningMessage: "무효트래픽 연속 3번 초과하여 공격으로 간주하여 IP 추적을 진행합니다.", // 경고 메시지
-        debug: false                   // 디버그 모드 (기본값: false)
+        blogUrl: "본인_블로그_주소"  // 예: "https://blog.naver.com/사용자아이디"
     };
 </script>
-<script src="https://cdn.jsdelivr.net/gh/[사용자명]/easy-traffic-blocker@1.0/easy_traffic_blocker.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/SABRINA242/easy-traffic-blocker@refs/heads/main/easy_traffic_blocker.js"></script>
+
 ```
+<!-- 트래픽 방지 스크립트 설정 - 고급 -->
+<script>
+    window.easyTrafficBlockerConfig = {
+        blogUrl: "본인_블로그_주소",     // 예: "https://blog.naver.com/사용자아이디"
+        maxClicks: 3,                  // 최대 허용 클릭 수 (기본값: 3)
+        resetTime: 1800000,           // 리셋 시간 (밀리초, 기본값: 30분)
+        warningMessage: "무효트래픽이 감지되어 IP가 기록되었습니다.",  // 경고 메시지
+        debug: false                   // 디버그 모드 (개발자용)
+    };
+</script>
+<script src="https://cdn.jsdelivr.net/gh/SABRINA242/easy-traffic-blocker@refs/heads/main/easy_traffic_blocker.js"></script>
 
 2. `blogUrl`에 본인의 블로그/웹사이트 주소를 입력하세요.
 
@@ -32,11 +42,21 @@
 - 스크립트는 반드시 `</head>` 태그 이전에 넣어주세요
 - 본인의 블로그 주소를 정확하게 입력해주세요
 - 애드센스가 설치된 페이지에만 적용됩니다
+- 기본 설정과 고급 설정 중 하나만 선택하여 설치하세요
+- 스킨/테마 변경 시 코드가 유지되는지 확인해주세요
 
 ## 작동 방식
 1. 애드센스 광고 클릭 감지
-2. 30분 이내 3회 초과 클릭 시 경고
-3. 설정된 블로그 주소로 리다이렉션
+2. 30분 이내 3회 초과 클릭 시 경고 메시지 표시
+3. IP 추적 및 로깅 시스템 작동
+4. 설정된 블로그 주소로 자동 리다이렉션
+
+## 지원 플랫폼
+- 네이버 블로그
+- 티스토리
+- 워드프레스
+- 기타 HTML 편집 가능한 모든 웹사이트
 
 ## 문의
-문제가 있으시면 이슈를 등록해주세요. 
+문제가 있으시면 GitHub 이슈를 등록해주세요.
+버그 리포트나 기능 개선 요청도 환영합니다.
