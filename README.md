@@ -18,27 +18,14 @@
 <!-- 트래픽 방지 스크립트 설정 -->
 <script>
     window.easyTrafficBlockerConfig = {
-        blogUrl: "본인_블로그_주소"  // 예: "https://blog.naver.com/사용자아이디"
+        blogUrl: "https://your-blog-url.com"  // 여기에 실제 본인 블로그 주소 입력
     };
 </script>
-<script src="https://cdn.jsdelivr.net/gh/SABRINA242/easy-traffic-blocker@main/easy_traffic_blocker.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/SABRINA242/easy-traffic-blocker@main/easy_traffic_blocker_v1_3.js"></script>
 
 ```
 ```html
-### 고급 (설정 가능하신분)
-<!-- 트래픽 방지 스크립트 설정 - 고급 -->
-<script>
-    window.easyTrafficBlockerConfig = {
-        blogUrl: "본인_블로그_주소",     // 예: "https://blog.naver.com/사용자아이디"
-        maxClicks: 3,                  // 최대 허용 클릭 수 (기본값: 3)
-        resetTime: 1800000,           // 리셋 시간 (밀리초, 기본값: 30분)
-        warningMessage: "무효트래픽이 감지되어 IP가 기록되었습니다.",  // 경고 메시지
-        debug: false                   // 디버그 모드 (개발자용)
-    };
-</script>
-<script src="https://cdn.jsdelivr.net/gh/SABRINA242/easy-traffic-blocker@main/easy_traffic_blocker.js"></script>
 
-```
 2. `blogUrl`에 본인의 블로그/웹사이트 주소를 입력하세요.
 
 ## 주의사항
